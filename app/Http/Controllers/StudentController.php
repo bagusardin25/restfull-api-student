@@ -44,7 +44,13 @@ class StudentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $student = Student::find($id);
+
+        if (!$student) {
+            return new studentResource(false, 'Failed', 'Student not found');
+        }
+
+        return new studentResource(true, 'Success', $student);
     }
 
     /**
@@ -52,7 +58,27 @@ class StudentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $student = Student::find($id);
+
+        if (!$student) {
+            return new studentResource(false, 'Failed', 'Student not found');
+        }
+
+        $validator = Validator($request->all(), [
+            'nim' => 'required',
+            'name' => 'required',
+            'email' => 'required',
+            'address' => 'required',
+            'phone' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return new studentResource(false, 'Failed', $validator->errors());
+        }
+
+        $student->update($request->all());
+
+        return new studentResource(true, 'Success', $student);
     }
 
     /**
@@ -60,6 +86,14 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $student = Student::find($id);
+
+        if (!$student) {
+            return new studentResource(false, 'Failed', 'Student not found');
+        }
+
+        $student->delete();
+
+        return new studentResource(true, 'Success', 'Student deleted successfully');
     }
 }
