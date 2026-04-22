@@ -1,11 +1,18 @@
 <?php
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StudentController;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+
+// Route yang butuh token JWT (login terlebih dahulu)
+Route::middleware('auth:api')->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::get('me', [AuthController::class, 'me']);
+
+    // CRUD Students - dilindungi JWT
+    Route::apiResource('students', StudentController::class);
 });
-
-Route::apiResource('students', \App\Http\Controllers\StudentController::class);
